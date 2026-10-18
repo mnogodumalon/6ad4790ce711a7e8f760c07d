@@ -20,6 +20,7 @@
 import type { ComponentType } from 'react';
 
 // <custom:intent-imports>
+import { IconListCheck, IconGavel, IconCircleCheck, IconFlag, IconBulb, IconChecklist } from '@tabler/icons-react';
 // </custom:intent-imports>
 
 export interface IntentLink {
@@ -42,6 +43,12 @@ export interface IntentLink {
 
 export const INTENTS: IntentLink[] = [
   // <custom:intents>
+  { path: '/intents/entscheidung-vorbereiten', label: { de: 'Entscheidung vorbereiten', en: 'Prepare decision' }, icon: IconListCheck, description: 'Entscheidung mit Frage, Fakten, Annahmen, Regeln und Alternativen vorbereiten' },
+  { path: '/intents/entscheidung-treffen', label: { de: 'Entscheidung treffen', en: 'Make decision' }, icon: IconGavel, description: 'Vorbereitete Entscheidung mit Option und Begründung abschließen' },
+  { path: '/intents/massnahme-freigeben', label: { de: 'Maßnahme freigeben', en: 'Approve action' }, icon: IconCircleCheck, description: 'Vorgeschlagene Maßnahme durch einen Menschen freigeben oder ablehnen' },
+  { path: '/intents/massnahme-abschliessen', label: { de: 'Maßnahme umsetzen und Ergebnis erfassen', en: 'Complete action and record result' }, icon: IconFlag, description: 'Umsetzung einer freigegebenen Maßnahme mit Ergebnis und Abweichung festhalten' },
+  { path: '/intents/erfahrung-erfassen', label: { de: 'Erfahrung erfassen', en: 'Capture experience' }, icon: IconBulb, description: 'Wissen als wiederverwendbare Erfahrung mit Gültigkeitsbereich dokumentieren' },
+  { path: '/intents/erfahrung-pruefen', label: { de: 'Erfahrung prüfen', en: 'Review experience' }, icon: IconChecklist, description: 'Erfahrung mit Belegen prüfen und ihren Gültigkeitsbereich festhalten' },
   // </custom:intents>
 ];
 
@@ -52,7 +59,7 @@ export const INTENTS: IntentLink[] = [
  * purpose — a scaffold update resets it to false (self-healing if Phase 2
  * never ran).
  */
-export const INTENTS_PENDING = true;
+export const INTENTS_PENDING = false;
 
 /**
  * When the Phase-1 bundle was deployed (ISO, set by the service together with

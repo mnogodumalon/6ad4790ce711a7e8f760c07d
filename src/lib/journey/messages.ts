@@ -43,6 +43,14 @@ export type MessageFieldKey<E extends EntityKey> = E extends keyof MessageFields
 
 export const REQUIRED_MESSAGES: { [E in EntityKey]?: Partial<Record<MessageFieldKey<E>, string>> } = {
   // <custom:messages>
+  vorhaben: { titel: "Bitte einen Titel eingeben.", ziel: "Bitte das Ziel beschreiben.", arbeitszustand: "Bitte den Arbeitszustand wählen." },
+  lernpruefungen: { pruefer: "Bitte einen Prüfer auswählen.", pruefdatum: "Bitte das Prüfdatum wählen.", ergebnis: "Bitte das Prüfergebnis wählen.", erfahrung: "Bitte eine Erfahrung auswählen." },
+  erfahrungen: { titel: "Bitte einen Titel eingeben.", kategorie: "Bitte eine Kategorie wählen.", status: "Bitte den Status wählen." },
+  entscheidungen: { vorhaben: "Bitte ein Vorhaben auswählen.", entscheidungsfrage: "Bitte die Entscheidungsfrage eingeben.", situationstyp: "Bitte den Situationstyp wählen.", zustaendiger: "Bitte einen Zuständigen auswählen.", status: "Bitte den Status wählen." },
+  regeln_und_berechtigungen: { bezeichnung: "Bitte eine Bezeichnung eingeben.", regeltyp: "Bitte den Regeltyp wählen.", status: "Bitte den Status wählen." },
+  alternativen: { bezeichnung: "Bitte eine Bezeichnung eingeben.", herkunft: "Bitte die Herkunft wählen.", entscheidung: "Bitte eine Entscheidung auswählen." },
+  nutzer: { nutzer_firstname: "Bitte den Vornamen eingeben.", nutzer_lastname: "Bitte den Nachnamen eingeben.", art: "Bitte die Art wählen.", rolle: "Bitte eine Rolle wählen." },
+  massnahmen: { vorhaben: "Bitte ein Vorhaben auswählen.", beschreibung: "Bitte die Tätigkeit beschreiben.", herkunft: "Bitte die Herkunft wählen.", status: "Bitte den Status wählen." },
   // </custom:messages>
 };
 
