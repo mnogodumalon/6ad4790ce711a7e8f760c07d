@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "Vorhaben": {
+      "placeholders_set": 12,
+      "defaults_keys": [
+        "arbeitszustand",
+        "start"
+      ],
+      "computed_keys": [
+        "_vorhaben_dauer_tage"
+      ],
+      "reason": "Start und Zieltermin bilden ein Datumspaar, daher wird die Dauer in Tagen als virtuelle Zusammenfassung berechnet; es gibt keine Preis- oder Mengenfelder."
+    },
+    "Lernprüfungen": {
+      "placeholders_set": 8,
+      "defaults_keys": [
+        "pruefdatum"
+      ],
+      "computed_keys": [],
+      "reason": "Keine Formeln, da das Formular keine numerischen Felder enthält und nur ein Prüfdatum als Standard sinnvoll ist."
+    },
+    "Erfahrungen": {
+      "placeholders_set": 11,
+      "defaults_keys": [
+        "status"
+      ],
+      "computed_keys": [],
+      "reason": "Reine Wissenssammlung ohne numerische Felder, daher keine Formeln; Status startet als Entwurf."
+    },
+    "Entscheidungen": {
+      "placeholders_set": 14,
+      "defaults_keys": [
+        "status",
+        "frist"
+      ],
+      "computed_keys": [],
+      "reason": "Keine Formeln, da keine numerischen Felder vorhanden sind und die Daten nur Text, Daten und Verknüpfungen enthalten."
+    },
+    "Regeln und Berechtigungen": {
+      "placeholders_set": 6,
+      "defaults_keys": [
+        "gueltig_ab",
+        "status"
+      ],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten ohne numerische Felder, daher keine Formeln."
+    },
+    "Alternativen": {
+      "placeholders_set": 7,
+      "defaults_keys": [
+        "herkunft",
+        "empfehlungsgrad"
+      ],
+      "computed_keys": [],
+      "reason": "Keine Formeln, da es keine numerischen Felder oder Datumspaare gibt und die Alternativen reine Beschreibungsdaten sind."
+    },
+    "Nutzer": {
+      "placeholders_set": 6,
+      "defaults_keys": [
+        "art",
+        "aktiv"
+      ],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten ohne numerische Felder, daher keine Formeln."
+    },
+    "Maßnahmen": {
+      "placeholders_set": 10,
+      "defaults_keys": [
+        "status",
+        "herkunft"
+      ],
+      "computed_keys": [],
+      "reason": "Keine numerischen Felder oder Datumspaare, daher keine Formeln; Status und Herkunft erhalten sinnvolle Startwerte."
+    }
+  }
+}

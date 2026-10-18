@@ -1,0 +1,92 @@
+{
+  "VorhabenDialog.tsx": {
+    "titel": "z. B. Neues Onboarding",
+    "ziel": "Was soll erreicht werden?",
+    "fachlicher_kontext": "Welcher fachliche Rahmen gilt?",
+    "hintergrund_historie": "Was ist bisher passiert?",
+    "arbeitszustand": "z. B. Idee, Geplant, In Arbeit",
+    "naechster_schritt": "z. B. Angebot einholen",
+    "verantwortlicher": "Wer ist verantwortlich?",
+    "beteiligte": "Wer ist beteiligt?",
+    "geltende_regeln": "Welche Regeln gelten?",
+    "ansprechpartner": "Ansprechpartner und Besonderheiten",
+    "start": "Wann startet das Vorhaben?",
+    "zieltermin": "Bis wann soll es fertig sein?"
+  },
+  "LernpruefungenDialog.tsx": {
+    "pruefer": "Wer prüft?",
+    "pruefdatum": "Wann wurde geprüft?",
+    "begruendung": "Warum dieses Ergebnis?",
+    "gueltigkeitsbereich_neu": "Wo gilt die Erfahrung jetzt?",
+    "wiederverwendbar_fuer": "z. B. Onboarding, Support",
+    "naechste_ueberpruefung": "Wann wird erneut geprüft?",
+    "erfahrung": "Welche Erfahrung?",
+    "belege_massnahmen": "Welche Maßnahmen belegen das?"
+  },
+  "ErfahrungenDialog.tsx": {
+    "titel": "z. B. Bekannter Fehler im Export",
+    "kategorie": "z. B. Früherer Fehler, Informelle Regel",
+    "beschreibung": "Was ist passiert oder gilt?",
+    "situation": "In welcher Lage trat es auf?",
+    "erkenntnis": "Was wurde gelernt oder gelöst?",
+    "gueltigkeitsbereich": "Wo gilt das?",
+    "grenzen": "Wo gilt es nicht?",
+    "vorhaben": "Aus welchem Vorhaben?",
+    "wissenstraeger": "Wer weiß Bescheid?",
+    "erfasst_von": "Wer erfasst das?",
+    "entscheidung": "Welche Entscheidung?"
+  },
+  "EntscheidungenDialog.tsx": {
+    "gewaehlte_option": "Welche Option wurde gewählt?",
+    "vorhaben": "Welches Vorhaben?",
+    "entscheidungsfrage": "Was soll entschieden werden?",
+    "gesicherte_fakten": "Ein Fakt pro Zeile",
+    "offene_annahmen": "Eine Annahme pro Zeile",
+    "fehlende_informationen": "Eine Information pro Zeile",
+    "geltende_regeln": "Welche Regeln gelten?",
+    "zustaendiger": "Wer ist zuständig?",
+    "frist": "Bis wann entscheiden?",
+    "begruendung": "Warum diese Entscheidung?",
+    "entscheidungsdatum": "Wann wurde entschieden?",
+    "umsetzungsplan": "Ein Schritt pro Zeile",
+    "erwartetes_ergebnis": "Was soll herauskommen?",
+    "tatsaechliches_ergebnis": "Was ist herausgekommen?"
+  },
+  "RegelnUndBerechtigungenDialog.tsx": {
+    "bezeichnung": "z. B. Freigabe ab 5.000 €",
+    "beschreibung": "Was regelt diese Regel?",
+    "geltungsbereich": "z. B. Projekt, Team, Dokumente",
+    "betroffene_rolle": "z. B. Alle, Prüfer",
+    "gueltig_ab": "Ab wann gilt die Regel?",
+    "verantwortlicher": "Wer ist verantwortlich?"
+  },
+  "AlternativenDialog.tsx": {
+    "bezeichnung": "z. B. Cloud-Migration",
+    "beschreibung": "Worum geht es bei dieser Alternative?",
+    "konsequenzen": "Welche Folgen hat sie?",
+    "risiken": "Eine Risiko pro Zeile",
+    "aufwand": "z. B. 3 Wochen",
+    "vorgeschlagen_von": "Wer schlägt das vor?",
+    "entscheidung": "Zu welcher Entscheidung?"
+  },
+  "NutzerDialog.tsx": {
+    "nutzer_firstname": "z. B. Anna",
+    "nutzer_lastname": "z. B. Müller",
+    "email": "z. B. anna.mueller@firma.de",
+    "rolle": "z. B. Mitarbeiter, Prüfer",
+    "fachgebiet": "z. B. Controlling",
+    "verantwortungsbereich": "Wofür ist die Person zuständig?"
+  },
+  "MassnahmenDialog.tsx": {
+    "entscheidung": "Welche Entscheidung?",
+    "vorhaben": "Welches Vorhaben?",
+    "beschreibung": "Was wird konkret getan?",
+    "vorgeschlagen_von": "Wer hat es vorgeschlagen?",
+    "freigegeben_von": "Wer hat freigegeben?",
+    "freigabedatum": "Wann wurde freigegeben?",
+    "zustandsaenderung": "Was hat sich verändert?",
+    "umsetzungsdatum": "Wann wurde umgesetzt?",
+    "tatsaechliches_ergebnis": "Was kam heraus?",
+    "abweichung": "Was wich vom Plan ab?"
+  }
+}

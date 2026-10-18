@@ -1,0 +1,479 @@
+{
+  "version": 1,
+  "language": "de",
+  "understanding": {
+    "summary": "Eine gemeinsame Arbeitsplattform, in der Menschen und KI komplexe Vorhaben bearbeiten. Jedes Vorhaben behält seinen fachlichen Kontext und einen klaren Arbeitszustand. Entscheidungen werden mit Frage, Alternativen, Fakten, Annahmen und geltenden Regeln vorbereitet. Maßnahmen, auch KI-Vorschläge, werden kontrolliert freigegeben und umgesetzt. Erfahrungen werden dokumentiert, geprüft und für spätere Vorhaben nutzbar gemacht, damit kein Wissen bei Einzelnen hängen bleibt.",
+    "roles": [
+      "Administrator",
+      "Projektverantwortlicher",
+      "Entscheider",
+      "Fachexperte",
+      "Prüfer",
+      "Mitarbeiter",
+      "KI-Assistent"
+    ],
+    "main_tasks": [
+      "Vorhaben anlegen und im Arbeitszustand führen",
+      "Entscheidung mit Alternativen vorbereiten und treffen",
+      "Maßnahmen vorschlagen, freigeben und umsetzen",
+      "Erfahrungen erfassen und prüfen",
+      "Regeln und Berechtigungen pflegen",
+      "Wirkung von Entscheidungen und Maßnahmen auswerten"
+    ],
+    "platform_roles": [
+      {
+        "persona": "Administrator",
+        "role": "administrator",
+        "apps": [
+          "nutzer",
+          "vorhaben",
+          "erfahrungen",
+          "lernpruefungen",
+          "entscheidungen",
+          "regeln_und_berechtigungen",
+          "alternativen",
+          "massnahmen"
+        ]
+      },
+      {
+        "persona": "Projektverantwortlicher",
+        "role": "datenverarbeitung",
+        "apps": [
+          "vorhaben",
+          "entscheidungen",
+          "alternativen",
+          "massnahmen",
+          "erfahrungen",
+          "regeln_und_berechtigungen",
+          "nutzer"
+        ]
+      },
+      {
+        "persona": "Entscheider",
+        "role": "datenverarbeitung",
+        "apps": [
+          "entscheidungen",
+          "alternativen",
+          "massnahmen",
+          "vorhaben",
+          "regeln_und_berechtigungen",
+          "nutzer"
+        ]
+      },
+      {
+        "persona": "Fachexperte",
+        "role": "standard",
+        "apps": [
+          "erfahrungen",
+          "alternativen",
+          "vorhaben",
+          "regeln_und_berechtigungen",
+          "nutzer",
+          "massnahmen",
+          "entscheidungen"
+        ]
+      },
+      {
+        "persona": "Prüfer",
+        "role": "datenverarbeitung",
+        "apps": [
+          "lernpruefungen",
+          "erfahrungen",
+          "massnahmen",
+          "entscheidungen",
+          "alternativen",
+          "nutzer",
+          "vorhaben",
+          "regeln_und_berechtigungen"
+        ]
+      },
+      {
+        "persona": "Mitarbeiter",
+        "role": "standard",
+        "apps": [
+          "vorhaben",
+          "massnahmen",
+          "erfahrungen",
+          "regeln_und_berechtigungen",
+          "nutzer",
+          "entscheidungen",
+          "alternativen"
+        ]
+      },
+      {
+        "persona": "KI-Assistent",
+        "role": "standard",
+        "apps": [
+          "alternativen",
+          "massnahmen",
+          "erfahrungen",
+          "vorhaben",
+          "regeln_und_berechtigungen",
+          "nutzer",
+          "entscheidungen"
+        ]
+      }
+    ]
+  },
+  "flows": [
+    {
+      "slug": "entscheidung-vorbereiten",
+      "label": {
+        "de": "Entscheidung vorbereiten",
+        "en": "Prepare decision"
+      },
+      "description": "Eine Entscheidung zu einem Vorhaben mit Frage, Fakten, Annahmen, Regeln und Zuständigem anlegen und die ersten Alternativen erfassen.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "entscheidungen",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "vorhaben": "picked",
+            "entscheidungsfrage": "user",
+            "situationstyp": "user",
+            "gesicherte_fakten": "user",
+            "offene_annahmen": "user",
+            "fehlende_informationen": "user",
+            "geltende_regeln": "picked",
+            "zustaendiger": "picked",
+            "frist": "user",
+            "status": "fixed:vorbereitet"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "alternativen",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "entscheidung": "picked",
+            "bezeichnung": "user",
+            "beschreibung": "user",
+            "konsequenzen": "user",
+            "risiken": "user",
+            "aufwand": "user",
+            "empfehlungsgrad": "user",
+            "herkunft": "user",
+            "vorgeschlagen_von": "picked"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "vorhaben",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "arbeitszustand": "fixed:wartet_auf_entscheidung"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `entscheidung-vorbereiten` — Entscheidung vorbereiten\nEine Entscheidung zu einem Vorhaben mit Frage, Fakten, Annahmen, Regeln und Zuständigem anlegen und die ersten Alternativen erfassen.\n\n## Your hook — import it, never rebuild what it owns\n`import { useEntscheidungVorbereitenFlow } from '@/lib/journey/flows/EntscheidungVorbereiten';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: vorhaben, geltende_regeln, zustaendiger, entscheidung, vorgeschlagen_von), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `vorhaben`: `{...flow.picks.vorhaben.select} {...flow.pick('vorhaben')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Vorhaben wählen\n2. Entscheidungsfrage, Situationstyp und Zuständigen angeben\n3. Gesicherte Fakten, offene Annahmen und fehlende Informationen erfassen\n4. Geltende Regeln wählen\n5. Alternativen mit Konsequenzen und Risiken erfassen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- creates `entscheidungen`:\n    - `vorhaben`: from the record the user picks in this flow\n    - `entscheidungsfrage`: the user enters it (bind it through the layer: form.field/…)\n    - `situationstyp`: the user enters it (bind it through the layer: form.field/…)\n    - `gesicherte_fakten`: the user enters it (bind it through the layer: form.field/…)\n    - `offene_annahmen`: the user enters it (bind it through the layer: form.field/…)\n    - `fehlende_informationen`: the user enters it (bind it through the layer: form.field/…)\n    - `geltende_regeln`: from the record the user picks in this flow\n    - `zustaendiger`: from the record the user picks in this flow\n    - `frist`: the user enters it (bind it through the layer: form.field/…)\n    - `status`: fixed value `vorbereitet` — set it in the plan step's values, never ask\n- creates `alternativen`:\n    - `entscheidung`: from the record the user picks in this flow\n    - `bezeichnung`: the user enters it (bind it through the layer: form.field/…)\n    - `beschreibung`: the user enters it (bind it through the layer: form.field/…)\n    - `konsequenzen`: the user enters it (bind it through the layer: form.field/…)\n    - `risiken`: the user enters it (bind it through the layer: form.field/…)\n    - `aufwand`: the user enters it (bind it through the layer: form.field/…)\n    - `empfehlungsgrad`: the user enters it (bind it through the layer: form.field/…)\n    - `herkunft`: the user enters it (bind it through the layer: form.field/…)\n    - `vorgeschlagen_von`: from the record the user picks in this flow\n- updates `vorhaben`:\n    - `arbeitszustand`: fixed value `wartet_auf_entscheidung` — set it in the plan step's values, never ask\n\n## Reads\n- `vorhaben` columns titel, arbeitszustand, verantwortlicher\n- `regeln_und_berechtigungen` columns bezeichnung, regeltyp, geltungsbereich\n- `nutzer` columns nutzer_firstname, nutzer_lastname, rolle\n\n## Success page\n- shows: `entscheidungen.entscheidungsfrage`, `entscheidungen.status`\n- next flows to offer: `entscheidung-treffen`\n\n## Never write these — another flow or a tool owns them\n- `entscheidungen.gewaehlte_option` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.begruendung` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.erwartetes_ergebnis` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.umsetzungsplan` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.entscheidungsdatum` (owner: intent `entscheidung-treffen`)\n- `massnahmen.entscheidung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorhaben` (owner: intent `entscheidung-treffen`)\n- `massnahmen.beschreibung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.herkunft` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorgeschlagen_von` (owner: intent `entscheidung-treffen`)\n- `massnahmen.status` (owner: intent `entscheidung-treffen`)\n- `massnahmen.freigegeben_von` (owner: intent `massnahme-freigeben`)\n- `massnahmen.freigabedatum` (owner: intent `massnahme-freigeben`)\n- `massnahmen.zustandsaenderung` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.umsetzungsdatum` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.tatsaechliches_ergebnis` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.abweichung` (owner: intent `massnahme-abschliessen`)\n- `erfahrungen.titel` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.kategorie` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.beschreibung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.situation` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erkenntnis` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.gueltigkeitsbereich` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.grenzen` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.vorhaben` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.entscheidung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.wissenstraeger` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erfasst_von` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.status` (owner: intent `erfahrung-erfassen`)\n- `lernpruefungen.erfahrung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefdatum` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.ergebnis` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.begruendung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.gueltigkeitsbereich_neu` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.wiederverwendbar_fuer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.naechste_ueberpruefung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.belege_massnahmen` (owner: intent `erfahrung-pruefen`)\n"
+    },
+    {
+      "slug": "entscheidung-treffen",
+      "label": {
+        "de": "Entscheidung treffen",
+        "en": "Make decision"
+      },
+      "description": "Eine vorbereitete Entscheidung mit gewählter Option und Begründung abschließen und optional erste Maßnahmen daraus ableiten.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "entscheidungen",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "gewaehlte_option": "picked",
+            "begruendung": "user",
+            "erwartetes_ergebnis": "user",
+            "umsetzungsplan": "user",
+            "entscheidungsdatum": "derived:today"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "massnahmen",
+          "op": "create",
+          "when": "optional",
+          "fields": {
+            "entscheidung": "picked",
+            "vorhaben": "picked",
+            "beschreibung": "user",
+            "herkunft": "user",
+            "vorgeschlagen_von": "picked",
+            "status": "fixed:vorgeschlagen"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `entscheidung-treffen` — Entscheidung treffen\nEine vorbereitete Entscheidung mit gewählter Option und Begründung abschließen und optional erste Maßnahmen daraus ableiten.\n\n## Your hook — import it, never rebuild what it owns\n`import { useEntscheidungTreffenFlow } from '@/lib/journey/flows/EntscheidungTreffen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: gewaehlte_option, entscheidung, vorhaben, vorgeschlagen_von), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `entscheidungen`: `{...flow.picks.entscheidungen.select} {...flow.pick('entscheidungen')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Offene Entscheidung wählen\n2. Alternativen und Regeln ansehen\n3. Gewählte Option, Begründung und Erwartung festhalten\n4. Umsetzungsplan angeben\n5. Optional eine Maßnahme vorschlagen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `entscheidungen`:\n    - `gewaehlte_option`: from the record the user picks in this flow\n    - `begruendung`: the user enters it (bind it through the layer: form.field/…)\n    - `erwartetes_ergebnis`: the user enters it (bind it through the layer: form.field/…)\n    - `umsetzungsplan`: the user enters it (bind it through the layer: form.field/…)\n    - `entscheidungsdatum`: derived: today() — set it in the plan step, never ask\n- creates `massnahmen` (only when the flow needs it):\n    - `entscheidung`: from the record the user picks in this flow\n    - `vorhaben`: from the record the user picks in this flow\n    - `beschreibung`: the user enters it (bind it through the layer: form.field/…)\n    - `herkunft`: the user enters it (bind it through the layer: form.field/…)\n    - `vorgeschlagen_von`: from the record the user picks in this flow\n    - `status`: fixed value `vorgeschlagen` — set it in the plan step's values, never ask\n\n## Reads\n- `entscheidungen` columns entscheidungsfrage, vorhaben, situationstyp, frist, gesicherte_fakten, offene_annahmen, zustaendiger\n- `alternativen` columns bezeichnung, konsequenzen, risiken, aufwand, empfehlungsgrad, herkunft\n\n## Success page\n- shows: `entscheidungen.status`, `entscheidungen.gewaehlte_option`\n- next flows to offer: `massnahme-freigeben`\n\n## Never write these — another flow or a tool owns them\n- `entscheidungen.vorhaben` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.entscheidungsfrage` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.situationstyp` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gesicherte_fakten` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.offene_annahmen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.fehlende_informationen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.geltende_regeln` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.zustaendiger` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.frist` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.status` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.entscheidung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.bezeichnung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.beschreibung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.konsequenzen` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.risiken` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.aufwand` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.empfehlungsgrad` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.herkunft` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.vorgeschlagen_von` (owner: intent `entscheidung-vorbereiten`)\n- `vorhaben.arbeitszustand` (owner: intent `entscheidung-vorbereiten`)\n- `massnahmen.freigegeben_von` (owner: intent `massnahme-freigeben`)\n- `massnahmen.freigabedatum` (owner: intent `massnahme-freigeben`)\n- `massnahmen.zustandsaenderung` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.umsetzungsdatum` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.tatsaechliches_ergebnis` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.abweichung` (owner: intent `massnahme-abschliessen`)\n- `erfahrungen.titel` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.kategorie` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.beschreibung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.situation` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erkenntnis` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.gueltigkeitsbereich` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.grenzen` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.vorhaben` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.entscheidung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.wissenstraeger` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erfasst_von` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.status` (owner: intent `erfahrung-erfassen`)\n- `lernpruefungen.erfahrung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefdatum` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.ergebnis` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.begruendung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.gueltigkeitsbereich_neu` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.wiederverwendbar_fuer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.naechste_ueberpruefung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.belege_massnahmen` (owner: intent `erfahrung-pruefen`)\n"
+    },
+    {
+      "slug": "massnahme-freigeben",
+      "label": {
+        "de": "Maßnahme freigeben",
+        "en": "Approve action"
+      },
+      "description": "Vorgeschlagene Maßnahmen, auch KI-Vorschläge, durch einen Menschen freigeben oder ablehnen.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "massnahmen",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "status": "user",
+            "freigegeben_von": "picked",
+            "freigabedatum": "derived:now"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `massnahme-freigeben` — Maßnahme freigeben\nVorgeschlagene Maßnahmen, auch KI-Vorschläge, durch einen Menschen freigeben oder ablehnen.\n\n## Your hook — import it, never rebuild what it owns\n`import { useMassnahmeFreigebenFlow } from '@/lib/journey/flows/MassnahmeFreigeben';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: freigegeben_von), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `massnahmen`: `{...flow.picks.massnahmen.select} {...flow.pick('massnahmen')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Vorgeschlagene Maßnahme wählen\n2. Herkunft, Entscheidung und Regeln prüfen\n3. Freigeben oder ablehnen\n4. Freigebenden Menschen bestätigen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `massnahmen`:\n    - `status`: the user enters it (bind it through the layer: form.field/…)\n    - `freigegeben_von`: from the record the user picks in this flow\n    - `freigabedatum`: derived: now() — set it in the plan step, never ask\n\n## Reads\n- `massnahmen` columns beschreibung, herkunft, vorgeschlagen_von, entscheidung, vorhaben\n- `nutzer` columns nutzer_firstname, nutzer_lastname, art, rolle\n\n## Checks BEFORE the write (block the submit with the message when they fail)\n- custom (field=`massnahmen.freigegeben_von`, requires=`nutzer.art = mensch`) — message: „Eine Maßnahme kann nur von einem Menschen freigegeben werden.“\n\n## Success page\n- shows: `massnahmen.status`, `massnahmen.freigabedatum`\n- next flows to offer: `massnahme-abschliessen`\n\n## Never write these — another flow or a tool owns them\n- `entscheidungen.vorhaben` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.entscheidungsfrage` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.situationstyp` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gesicherte_fakten` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.offene_annahmen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.fehlende_informationen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.geltende_regeln` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.zustaendiger` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.frist` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.status` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.entscheidung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.bezeichnung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.beschreibung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.konsequenzen` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.risiken` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.aufwand` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.empfehlungsgrad` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.herkunft` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.vorgeschlagen_von` (owner: intent `entscheidung-vorbereiten`)\n- `vorhaben.arbeitszustand` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gewaehlte_option` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.begruendung` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.erwartetes_ergebnis` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.umsetzungsplan` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.entscheidungsdatum` (owner: intent `entscheidung-treffen`)\n- `massnahmen.entscheidung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorhaben` (owner: intent `entscheidung-treffen`)\n- `massnahmen.beschreibung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.herkunft` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorgeschlagen_von` (owner: intent `entscheidung-treffen`)\n- `massnahmen.zustandsaenderung` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.umsetzungsdatum` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.tatsaechliches_ergebnis` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.abweichung` (owner: intent `massnahme-abschliessen`)\n- `erfahrungen.titel` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.kategorie` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.beschreibung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.situation` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erkenntnis` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.gueltigkeitsbereich` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.grenzen` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.vorhaben` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.entscheidung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.wissenstraeger` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erfasst_von` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.status` (owner: intent `erfahrung-erfassen`)\n- `lernpruefungen.erfahrung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefdatum` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.ergebnis` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.begruendung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.gueltigkeitsbereich_neu` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.wiederverwendbar_fuer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.naechste_ueberpruefung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.belege_massnahmen` (owner: intent `erfahrung-pruefen`)\n"
+    },
+    {
+      "slug": "massnahme-abschliessen",
+      "label": {
+        "de": "Maßnahme umsetzen und Ergebnis erfassen",
+        "en": "Complete action and record result"
+      },
+      "description": "Umsetzung einer freigegebenen Maßnahme mit tatsächlichem Ergebnis und Abweichung festhalten und das Vorhaben zur Wirkungsprüfung setzen.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "massnahmen",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "zustandsaenderung": "user",
+            "umsetzungsdatum": "user",
+            "tatsaechliches_ergebnis": "user",
+            "abweichung": "user",
+            "status": "fixed:erledigt"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "vorhaben",
+          "op": "update",
+          "when": "optional",
+          "fields": {
+            "arbeitszustand": "fixed:wirkung_pruefen"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `massnahme-abschliessen` — Maßnahme umsetzen und Ergebnis erfassen\nUmsetzung einer freigegebenen Maßnahme mit tatsächlichem Ergebnis und Abweichung festhalten und das Vorhaben zur Wirkungsprüfung setzen.\n\n## Your hook — import it, never rebuild what it owns\n`import { useMassnahmeAbschliessenFlow } from '@/lib/journey/flows/MassnahmeAbschliessen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `massnahmen`: `{...flow.picks.massnahmen.select} {...flow.pick('massnahmen')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. This flow CHANGES a record of `vorhaben`: `{...flow.picks.vorhaben.select} {...flow.pick('vorhaben')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Freigegebene Maßnahme wählen\n2. Zustandsänderung und Umsetzungsdatum erfassen\n3. Tatsächliches Ergebnis und Abweichung beschreiben\n4. Vorhaben auf Wirkung prüfen setzen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- updates `massnahmen`:\n    - `zustandsaenderung`: the user enters it (bind it through the layer: form.field/…)\n    - `umsetzungsdatum`: the user enters it (bind it through the layer: form.field/…)\n    - `tatsaechliches_ergebnis`: the user enters it (bind it through the layer: form.field/…)\n    - `abweichung`: the user enters it (bind it through the layer: form.field/…)\n    - `status`: fixed value `erledigt` — set it in the plan step's values, never ask\n- updates `vorhaben` (only when the flow needs it):\n    - `arbeitszustand`: fixed value `wirkung_pruefen` — set it in the plan step's values, never ask\n\n## Reads\n- `massnahmen` columns beschreibung, vorhaben, entscheidung, freigegeben_von, freigabedatum\n\n## Checks BEFORE the write (block the submit with the message when they fail)\n- custom (field=`massnahmen.status`, requires=`freigegeben|in_umsetzung`) — message: „Nur freigegebene Maßnahmen können umgesetzt werden.“\n\n## Success page\n- shows: `massnahmen.status`, `massnahmen.tatsaechliches_ergebnis`\n- next flows to offer: `erfahrung-erfassen`\n\n## Never write these — another flow or a tool owns them\n- `entscheidungen.vorhaben` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.entscheidungsfrage` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.situationstyp` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gesicherte_fakten` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.offene_annahmen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.fehlende_informationen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.geltende_regeln` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.zustaendiger` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.frist` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.status` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.entscheidung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.bezeichnung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.beschreibung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.konsequenzen` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.risiken` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.aufwand` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.empfehlungsgrad` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.herkunft` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.vorgeschlagen_von` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gewaehlte_option` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.begruendung` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.erwartetes_ergebnis` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.umsetzungsplan` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.entscheidungsdatum` (owner: intent `entscheidung-treffen`)\n- `massnahmen.entscheidung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorhaben` (owner: intent `entscheidung-treffen`)\n- `massnahmen.beschreibung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.herkunft` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorgeschlagen_von` (owner: intent `entscheidung-treffen`)\n- `massnahmen.freigegeben_von` (owner: intent `massnahme-freigeben`)\n- `massnahmen.freigabedatum` (owner: intent `massnahme-freigeben`)\n- `erfahrungen.titel` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.kategorie` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.beschreibung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.situation` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erkenntnis` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.gueltigkeitsbereich` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.grenzen` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.vorhaben` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.entscheidung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.wissenstraeger` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erfasst_von` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.status` (owner: intent `erfahrung-erfassen`)\n- `lernpruefungen.erfahrung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefdatum` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.ergebnis` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.begruendung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.gueltigkeitsbereich_neu` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.wiederverwendbar_fuer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.naechste_ueberpruefung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.belege_massnahmen` (owner: intent `erfahrung-pruefen`)\n"
+    },
+    {
+      "slug": "erfahrung-erfassen",
+      "label": {
+        "de": "Erfahrung erfassen",
+        "en": "Capture experience"
+      },
+      "description": "Wissen aus einem Vorhaben, einer Entscheidung oder von einem Wissensträger als wiederverwendbare Erfahrung mit Gültigkeitsbereich und Grenzen dokumentieren.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "erfahrungen",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "titel": "user",
+            "kategorie": "user",
+            "beschreibung": "user",
+            "situation": "user",
+            "erkenntnis": "user",
+            "gueltigkeitsbereich": "user",
+            "grenzen": "user",
+            "vorhaben": "picked",
+            "entscheidung": "picked",
+            "wissenstraeger": "picked",
+            "erfasst_von": "picked",
+            "status": "fixed:entwurf"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `erfahrung-erfassen` — Erfahrung erfassen\nWissen aus einem Vorhaben, einer Entscheidung oder von einem Wissensträger als wiederverwendbare Erfahrung mit Gültigkeitsbereich und Grenzen dokumentieren.\n\n## Your hook — import it, never rebuild what it owns\n`import { useErfahrungErfassenFlow } from '@/lib/journey/flows/ErfahrungErfassen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: vorhaben, entscheidung, wissenstraeger, erfasst_von), `initial`, `messages`. The hook's docblock in .lane-context.md shows the exact call. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Kategorie und Titel angeben\n2. Quelle wählen: Vorhaben, Entscheidung, Wissensträger\n3. Situation, Erkenntnis, Gültigkeitsbereich und Grenzen beschreiben\n4. Erfassenden bestätigen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- creates `erfahrungen`:\n    - `titel`: the user enters it (bind it through the layer: form.field/…)\n    - `kategorie`: the user enters it (bind it through the layer: form.field/…)\n    - `beschreibung`: the user enters it (bind it through the layer: form.field/…)\n    - `situation`: the user enters it (bind it through the layer: form.field/…)\n    - `erkenntnis`: the user enters it (bind it through the layer: form.field/…)\n    - `gueltigkeitsbereich`: the user enters it (bind it through the layer: form.field/…)\n    - `grenzen`: the user enters it (bind it through the layer: form.field/…)\n    - `vorhaben`: from the record the user picks in this flow\n    - `entscheidung`: from the record the user picks in this flow\n    - `wissenstraeger`: from the record the user picks in this flow\n    - `erfasst_von`: from the record the user picks in this flow\n    - `status`: fixed value `entwurf` — set it in the plan step's values, never ask\n\n## Reads\n- `vorhaben` columns titel, arbeitszustand\n- `entscheidungen` columns entscheidungsfrage, status, tatsaechliches_ergebnis\n\n## Success page\n- shows: `erfahrungen.titel`, `erfahrungen.status`\n- next flows to offer: `erfahrung-pruefen`\n\n## Never write these — another flow or a tool owns them\n- `entscheidungen.vorhaben` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.entscheidungsfrage` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.situationstyp` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gesicherte_fakten` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.offene_annahmen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.fehlende_informationen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.geltende_regeln` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.zustaendiger` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.frist` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.status` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.entscheidung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.bezeichnung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.beschreibung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.konsequenzen` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.risiken` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.aufwand` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.empfehlungsgrad` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.herkunft` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.vorgeschlagen_von` (owner: intent `entscheidung-vorbereiten`)\n- `vorhaben.arbeitszustand` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gewaehlte_option` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.begruendung` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.erwartetes_ergebnis` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.umsetzungsplan` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.entscheidungsdatum` (owner: intent `entscheidung-treffen`)\n- `massnahmen.entscheidung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorhaben` (owner: intent `entscheidung-treffen`)\n- `massnahmen.beschreibung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.herkunft` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorgeschlagen_von` (owner: intent `entscheidung-treffen`)\n- `massnahmen.status` (owner: intent `entscheidung-treffen`)\n- `massnahmen.freigegeben_von` (owner: intent `massnahme-freigeben`)\n- `massnahmen.freigabedatum` (owner: intent `massnahme-freigeben`)\n- `massnahmen.zustandsaenderung` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.umsetzungsdatum` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.tatsaechliches_ergebnis` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.abweichung` (owner: intent `massnahme-abschliessen`)\n- `lernpruefungen.erfahrung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.pruefdatum` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.ergebnis` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.begruendung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.gueltigkeitsbereich_neu` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.wiederverwendbar_fuer` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.naechste_ueberpruefung` (owner: intent `erfahrung-pruefen`)\n- `lernpruefungen.belege_massnahmen` (owner: intent `erfahrung-pruefen`)\n"
+    },
+    {
+      "slug": "erfahrung-pruefen",
+      "label": {
+        "de": "Erfahrung prüfen",
+        "en": "Review experience"
+      },
+      "description": "Eine Erfahrung mit Belegen aus Maßnahmen prüfen, Ergebnis und neuen Gültigkeitsbereich festhalten und den Status der Erfahrung setzen.",
+      "priority": "must",
+      "writes": [
+        {
+          "entity": "lernpruefungen",
+          "op": "create",
+          "when": "always",
+          "fields": {
+            "erfahrung": "picked",
+            "pruefer": "picked",
+            "pruefdatum": "derived:today",
+            "ergebnis": "user",
+            "begruendung": "user",
+            "gueltigkeitsbereich_neu": "user",
+            "wiederverwendbar_fuer": "user",
+            "naechste_ueberpruefung": "user",
+            "belege_massnahmen": "picked"
+          },
+          "needs": {}
+        },
+        {
+          "entity": "erfahrungen",
+          "op": "update",
+          "when": "always",
+          "fields": {
+            "status": "derived:computed:Bei Ergebnis „Bestätigt“ oder „Eingeschränkt“ auf „Geprüft“, bei „Widerlegt“ auf „Veraltet“ setzen"
+          },
+          "needs": {}
+        }
+      ],
+      "required": [],
+      "brief": "# Flow `erfahrung-pruefen` — Erfahrung prüfen\nEine Erfahrung mit Belegen aus Maßnahmen prüfen, Ergebnis und neuen Gültigkeitsbereich festhalten und den Status der Erfahrung setzen.\n\n## Your hook — import it, never rebuild what it owns\n`import { useErfahrungPruefenFlow } from '@/lib/journey/flows/ErfahrungPruefen';` — generated from the Schreibliste below. It OWNS the form(s), one record search per picked field (columns and filter from the plan) and the submit plan with every fixed and derived value. You compose: `flow.forms.<entity>` for <Bound>/<Field>, `{...flow.picks.<field>.select} {...flow.pick('<field>')}` (or `flow.pickMany` for a multi pick) for <EntitySelectStep>, `flow.validateStep(n)` in StepNav.onNext, `flow.submit` + `flow.formList` for SummaryStep/SuccessStep, `flow.reset()`; what the hook does not own reads through its door `flow.port` — availability `useOccupancy(flow.port, '<entity>', { resource })`, a count `useRecordCount(flow.port, …)` — never import servicePort next to the hook. Options: `steps` (field → step), `items` (how a hit reads, per pick: erfahrung, pruefer, belege_massnahmen), `initial`, `messages`, and `compute` — REQUIRED, the plan leaves these rules to you: status. The hook's docblock in .lane-context.md shows the exact call. This flow CHANGES a record of `erfahrungen`: `{...flow.picks.erfahrungen.select} {...flow.pick('erfahrungen')}` picks it, the hook prefills the form with its current values and updates THAT record — never a create step, never a list from useDashboardData. Never import servicePort, useStepForm, useJourneySubmit, useRecordSearch or useDashboardData in this page — check-intents refuses a page that uses the hook and any of them.\n\n## Steps (in this order)\n1. Erfahrung im Entwurf wählen\n2. Belege aus Maßnahmen auswählen\n3. Ergebnis, Begründung und Gültigkeitsbereich erfassen\n4. Nächste Überprüfung festlegen\n\n## Schreibliste — the ONLY writes this flow makes (the gate compares your plan steps with this list)\n- creates `lernpruefungen`:\n    - `erfahrung`: from the record the user picks in this flow\n    - `pruefer`: from the record the user picks in this flow\n    - `pruefdatum`: derived: today() — set it in the plan step, never ask\n    - `ergebnis`: the user enters it (bind it through the layer: form.field/…)\n    - `begruendung`: the user enters it (bind it through the layer: form.field/…)\n    - `gueltigkeitsbereich_neu`: the user enters it (bind it through the layer: form.field/…)\n    - `wiederverwendbar_fuer`: the user enters it (bind it through the layer: form.field/…)\n    - `naechste_ueberpruefung`: the user enters it (bind it through the layer: form.field/…)\n    - `belege_massnahmen`: from the record the user picks in this flow\n- updates `erfahrungen`:\n    - `status`: derived (computed)\n\n## Reads\n- `erfahrungen` columns titel, kategorie, situation, erkenntnis, gueltigkeitsbereich, grenzen, status\n- `massnahmen` columns beschreibung, tatsaechliches_ergebnis, abweichung, vorhaben\n\n## Success page\n- shows: `lernpruefungen.ergebnis`, `erfahrungen.status`\n\n## Never write these — another flow or a tool owns them\n- `entscheidungen.vorhaben` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.entscheidungsfrage` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.situationstyp` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gesicherte_fakten` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.offene_annahmen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.fehlende_informationen` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.geltende_regeln` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.zustaendiger` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.frist` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.status` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.entscheidung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.bezeichnung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.beschreibung` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.konsequenzen` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.risiken` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.aufwand` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.empfehlungsgrad` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.herkunft` (owner: intent `entscheidung-vorbereiten`)\n- `alternativen.vorgeschlagen_von` (owner: intent `entscheidung-vorbereiten`)\n- `vorhaben.arbeitszustand` (owner: intent `entscheidung-vorbereiten`)\n- `entscheidungen.gewaehlte_option` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.begruendung` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.erwartetes_ergebnis` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.umsetzungsplan` (owner: intent `entscheidung-treffen`)\n- `entscheidungen.entscheidungsdatum` (owner: intent `entscheidung-treffen`)\n- `massnahmen.entscheidung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorhaben` (owner: intent `entscheidung-treffen`)\n- `massnahmen.beschreibung` (owner: intent `entscheidung-treffen`)\n- `massnahmen.herkunft` (owner: intent `entscheidung-treffen`)\n- `massnahmen.vorgeschlagen_von` (owner: intent `entscheidung-treffen`)\n- `massnahmen.status` (owner: intent `entscheidung-treffen`)\n- `massnahmen.freigegeben_von` (owner: intent `massnahme-freigeben`)\n- `massnahmen.freigabedatum` (owner: intent `massnahme-freigeben`)\n- `massnahmen.zustandsaenderung` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.umsetzungsdatum` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.tatsaechliches_ergebnis` (owner: intent `massnahme-abschliessen`)\n- `massnahmen.abweichung` (owner: intent `massnahme-abschliessen`)\n- `erfahrungen.titel` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.kategorie` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.beschreibung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.situation` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erkenntnis` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.gueltigkeitsbereich` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.grenzen` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.vorhaben` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.entscheidung` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.wissenstraeger` (owner: intent `erfahrung-erfassen`)\n- `erfahrungen.erfasst_von` (owner: intent `erfahrung-erfassen`)\n"
+    }
+  ],
+  "public_pages": [],
+  "tools": [
+    {
+      "id": "entscheidung-umgesetzt-setzen",
+      "purpose": "Bei jeder Änderung einer Maßnahme prüfen, ob ihr Status „Erledigt“ ist und sie eine Entscheidung hat. Dann die Entscheidung auf „Umgesetzt“ setzen. Der Status der Entscheidung wird von keinem Ablauf geschrieben."
+    },
+    {
+      "id": "faellige-entscheidungen-melden",
+      "purpose": "Täglich eine Sammelmail an den Schlüsselinhaber mit allen offenen Entscheidungen, deren Frist verstrichen ist."
+    },
+    {
+      "id": "freigaben-erinnern",
+      "purpose": "Werktäglich eine Sammelmail an den Schlüsselinhaber über Maßnahmen, die vorgeschlagen sind und auf Freigabe warten, auch KI-Vorschläge."
+    },
+    {
+      "id": "ueberpruefungen-erinnern",
+      "purpose": "Wöchentlich eine Sammelmail an den Schlüsselinhaber über Lernprüfungen, deren nächste Überprüfung fällig oder überschritten ist."
+    }
+  ],
+  "covered_by_platform": [
+    {
+      "wish": "Upload-Feld Dokumentation am Vorhaben",
+      "feature": "record_form"
+    },
+    {
+      "wish": "Dokumente zu Vorhaben anhängen",
+      "feature": "record_attachments"
+    },
+    {
+      "wish": "Regeln, Berechtigungen und Zustandsänderungen nachvollziehbar",
+      "feature": "record_history"
+    },
+    {
+      "wish": "Zugriff je Rolle (Administrator, Entscheider, Prüfer ...)",
+      "feature": "user_roles"
+    },
+    {
+      "wish": "Erfahrungen und Vorhaben durchsuchen und wiederverwenden",
+      "feature": "search_filter"
+    },
+    {
+      "wish": "Übersicht pro Status, Vorhaben oder Kategorie",
+      "feature": "distribution_view"
+    }
+  ],
+  "ownership": {
+    "entscheidungen": {
+      "vorhaben": "intent:entscheidung-vorbereiten",
+      "entscheidungsfrage": "intent:entscheidung-vorbereiten",
+      "situationstyp": "intent:entscheidung-vorbereiten",
+      "gesicherte_fakten": "intent:entscheidung-vorbereiten",
+      "offene_annahmen": "intent:entscheidung-vorbereiten",
+      "fehlende_informationen": "intent:entscheidung-vorbereiten",
+      "geltende_regeln": "intent:entscheidung-vorbereiten",
+      "zustaendiger": "intent:entscheidung-vorbereiten",
+      "frist": "intent:entscheidung-vorbereiten",
+      "status": "tool:entscheidung-umgesetzt-setzen",
+      "gewaehlte_option": "intent:entscheidung-treffen",
+      "begruendung": "intent:entscheidung-treffen",
+      "erwartetes_ergebnis": "intent:entscheidung-treffen",
+      "umsetzungsplan": "intent:entscheidung-treffen",
+      "entscheidungsdatum": "intent:entscheidung-treffen"
+    },
+    "alternativen": {
+      "entscheidung": "intent:entscheidung-vorbereiten",
+      "bezeichnung": "intent:entscheidung-vorbereiten",
+      "beschreibung": "intent:entscheidung-vorbereiten",
+      "konsequenzen": "intent:entscheidung-vorbereiten",
+      "risiken": "intent:entscheidung-vorbereiten",
+      "aufwand": "intent:entscheidung-vorbereiten",
+      "empfehlungsgrad": "intent:entscheidung-vorbereiten",
+      "herkunft": "intent:entscheidung-vorbereiten",
+      "vorgeschlagen_von": "intent:entscheidung-vorbereiten"
+    },
+    "vorhaben": {
+      "arbeitszustand": "intent:massnahme-abschliessen"
+    },
+    "massnahmen": {
+      "entscheidung": "intent:entscheidung-treffen",
+      "vorhaben": "intent:entscheidung-treffen",
+      "beschreibung": "intent:entscheidung-treffen",
+      "herkunft": "intent:entscheidung-treffen",
+      "vorgeschlagen_von": "intent:entscheidung-treffen",
+      "status": "intent:massnahme-abschliessen",
+      "freigegeben_von": "intent:massnahme-freigeben",
+      "freigabedatum": "intent:massnahme-freigeben",
+      "zustandsaenderung": "intent:massnahme-abschliessen",
+      "umsetzungsdatum": "intent:massnahme-abschliessen",
+      "tatsaechliches_ergebnis": "intent:massnahme-abschliessen",
+      "abweichung": "intent:massnahme-abschliessen"
+    },
+    "erfahrungen": {
+      "titel": "intent:erfahrung-erfassen",
+      "kategorie": "intent:erfahrung-erfassen",
+      "beschreibung": "intent:erfahrung-erfassen",
+      "situation": "intent:erfahrung-erfassen",
+      "erkenntnis": "intent:erfahrung-erfassen",
+      "gueltigkeitsbereich": "intent:erfahrung-erfassen",
+      "grenzen": "intent:erfahrung-erfassen",
+      "vorhaben": "intent:erfahrung-erfassen",
+      "entscheidung": "intent:erfahrung-erfassen",
+      "wissenstraeger": "intent:erfahrung-erfassen",
+      "erfasst_von": "intent:erfahrung-erfassen",
+      "status": "intent:erfahrung-pruefen"
+    },
+    "lernpruefungen": {
+      "erfahrung": "intent:erfahrung-pruefen",
+      "pruefer": "intent:erfahrung-pruefen",
+      "pruefdatum": "intent:erfahrung-pruefen",
+      "ergebnis": "intent:erfahrung-pruefen",
+      "begruendung": "intent:erfahrung-pruefen",
+      "gueltigkeitsbereich_neu": "intent:erfahrung-pruefen",
+      "wiederverwendbar_fuer": "intent:erfahrung-pruefen",
+      "naechste_ueberpruefung": "intent:erfahrung-pruefen",
+      "belege_massnahmen": "intent:erfahrung-pruefen"
+    }
+  },
+  "dashboard": {
+    "focus": [
+      "Vorhaben nach Arbeitszustand",
+      "Offene Entscheidungen mit Frist",
+      "Maßnahmen, die auf Freigabe warten",
+      "Erfahrungen im Entwurf und anstehende Überprüfungen"
+    ],
+    "hints": [
+      "Entscheidungen zeigen Frage, Alternativen, Fakten, Annahmen und geltende Regeln zusammen",
+      "KI-Vorschläge sind an der Herkunft erkennbar und brauchen eine Freigabe",
+      "Überfällige Fristen und Überprüfungen hervorheben"
+    ],
+    "wishes": []
+  }
+}
