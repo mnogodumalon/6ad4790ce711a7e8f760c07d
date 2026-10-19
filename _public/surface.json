@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "slug": "vorhaben-anlegen",
+      "component": "VorhabenAnlegen",
+      "title": "Vorhaben anlegen",
+      "endpoints": [
+        {
+          "entity": "vorhaben",
+          "op": "create",
+          "fields": [
+            "titel",
+            "ziel",
+            "fachlicher_kontext",
+            "hintergrund_historie",
+            "naechster_schritt",
+            "ansprechpartner",
+            "start",
+            "zieltermin"
+          ]
+        }
+      ]
+    }
+  ]
+}

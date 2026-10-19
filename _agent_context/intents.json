@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "flows": [
+    {
+      "path": "/intents/entscheidung-vorbereiten",
+      "label": "Entscheidung vorbereiten",
+      "description": "Entscheidung mit Frage, Fakten, Annahmen, Regeln und Alternativen vorbereiten",
+      "file": "src/pages/intents/EntscheidungVorbereitenPage.tsx",
+      "summary": "/**\n * Entscheidung vorbereiten — 5-Schritt-Wizard.\n * Steps: 1) Vorhaben wählen → 2) Frage, Situationstyp und Zuständigen → 3) Fakten, Annahmen, Lücken\n *        → 4) Geltende Regeln → 5) Alternativen erfassen → Prüfen & anlegen.\n * Reads: vorhaben, regeln_und_berechtigungen, nutzer.\n * Writes: entscheidungen (create), alternativen (create), vorhaben (update arbeitszustand) — all via useEntscheidungVorbereitenFlow.\n * Composes: IntentWizardShell, EntitySelectStep, Bound, Field, StepNav, SummaryStep, SuccessStep.\n */",
+      "components": [
+        "Bound",
+        "EntitySelectStep",
+        "Field",
+        "IntentWizardShell",
+        "StepNav",
+        "SuccessStep",
+        "SummaryStep",
+        "WizardStep"
+      ],
+      "writes": []
+    },
+    {
+      "path": "/intents/entscheidung-treffen",
+      "label": "Entscheidung treffen",
+      "description": "Vorbereitete Entscheidung mit Option und Begründung abschließen",
+      "file": "src/pages/intents/EntscheidungTreffenPage.tsx",
+      "summary": "/**\n * Entscheidung treffen — 5-Schritt-Wizard + Prüfen.\n * Steps: 1) Offene Entscheidung wählen → 2) Alternativen und Regeln ansehen → 3) Option, Begründung, Erwartung\n *        → 4) Umsetzungsplan → 5) Optional Maßnahme vorschlagen → Prüfen & abschließen.\n * Reads: entscheidungen, alternativen, regeln_und_berechtigungen, vorhaben, nutzer.\n * Writes: entscheidungen (update), massnahmen (optional create) — via useEntscheidungTreffenFlow.\n * Composes: IntentWizardShell, EntitySelectStep, Bound, StepNav, SummaryStep, SuccessStep, StatusBadge.\n */",
+      "components": [
+        "Bound",
+        "EntitySelectStep",
+        "IntentWizardShell",
+        "StatusBadge",
+        "StepNav",
+        "SuccessStep",
+        "SummaryStep",
+        "WizardStep"
+      ],
+      "writes": []
+    },
+    {
+      "path": "/intents/massnahme-freigeben",
+      "label": "Maßnahme freigeben",
+      "description": "Vorgeschlagene Maßnahme durch einen Menschen freigeben oder ablehnen",
+      "file": "src/pages/intents/MassnahmeFreigebenPage.tsx",
+      "summary": "/**\n * Maßnahme freigeben — 5-Schritt-Wizard.\n * Steps: 1) Vorgeschlagene Maßnahme wählen → 2) Herkunft, Entscheidung und Regeln prüfen\n *        → 3) Freigeben oder ablehnen → 4) Freigebenden Menschen bestätigen → 5) Prüfen & speichern.\n * Reads: massnahmen (status vorgeschlagen), nutzer (art mensch), vorhaben, regeln_und_berechtigungen.\n * Writes: massnahmen (update: status, freigegeben_von, freigabedatum) via useMassnahmeFreigebenFlow.\n * Composes: IntentWizardShell, EntitySelectStep, Field, ChoiceGroup, StepNav, SummaryStep, SuccessStep.\n */",
+      "components": [
+        "Checkbox",
+        "ChoiceGroup",
+        "EntitySelectStep",
+        "Field",
+        "IntentWizardShell",
+        "StepNav",
+        "SuccessStep",
+        "SummaryStep",
+        "WizardStep"
+      ],
+      "writes": []
+    },
+    {
+      "path": "/intents/massnahme-abschliessen",
+      "label": "Maßnahme umsetzen und Ergebnis erfassen",
+      "description": "Umsetzung einer freigegebenen Maßnahme mit Ergebnis und Abweichung festhalten",
+      "file": "src/pages/intents/MassnahmeAbschliessenPage.tsx",
+      "summary": "/**\n * Maßnahme abschließen — 5-Schritt-Wizard.\n * Steps: 1) Freigegebene Maßnahme wählen → 2) Zustandsänderung und Umsetzungsdatum → 3) Ergebnis und Abweichung\n *        → 4) Vorhaben auf Wirkungsprüfung setzen → 5) Prüfen & speichern.\n * Reads: massnahmen, vorhaben (über den Flow-Hook). Writes: massnahmen (status erledigt), vorhaben (arbeitszustand wirkung_pruefen).\n * Composes: IntentWizardShell, EntitySelectStep, Bound, StepNav, SummaryStep, SuccessStep.\n */",
+      "components": [
+        "Bound",
+        "EntitySelectStep",
+        "IntentWizardShell",
+        "StepNav",
+        "SuccessStep",
+        "SummaryStep",
+        "WizardStep"
+      ],
+      "writes": []
+    },
+    {
+      "path": "/intents/erfahrung-erfassen",
+      "label": "Erfahrung erfassen",
+      "description": "Wissen als wiederverwendbare Erfahrung mit Gültigkeitsbereich dokumentieren",
+      "file": "src/pages/intents/ErfahrungErfassenPage.tsx",
+      "summary": "/**\n * Erfahrung erfassen — 4-Schritt-Wizard + Prüfen.\n * Steps: 1) Kategorie und Titel → 2) Quelle wählen (Vorhaben, Entscheidung, Wissensträger) →\n * 3) Situation, Erkenntnis, Gültigkeitsbereich, Grenzen → 4) Erfassenden bestätigen → Prüfen & anlegen.\n * Reads: vorhaben, entscheidungen, nutzer. Writes: erfahrungen (status fest: entwurf).\n * Composes: IntentWizardShell, Bound, EntitySelectStep, StepNav, SummaryStep, SuccessStep.\n */",
+      "components": [
+        "Bound",
+        "EntitySelectStep",
+        "IntentWizardShell",
+        "StepNav",
+        "SuccessStep",
+        "SummaryStep",
+        "WizardStep"
+      ],
+      "writes": []
+    },
+    {
+      "path": "/intents/erfahrung-pruefen",
+      "label": "Erfahrung prüfen",
+      "description": "Erfahrung mit Belegen prüfen und ihren Gültigkeitsbereich festhalten",
+      "file": "src/pages/intents/ErfahrungPruefenPage.tsx",
+      "summary": "/**\n * Erfahrung prüfen — 5-Schritt-Wizard.\n * Steps: 1) Erfahrung im Entwurf wählen → 2) Belege aus Maßnahmen wählen (optional) →\n *        3) Prüfer, Ergebnis, Begründung und Gültigkeitsbereich erfassen → 4) Nächste Überprüfung festlegen → 5) Prüfen & speichern.\n * Reads: erfahrungen, massnahmen, nutzer. Writes: lernpruefungen (create), erfahrungen (status update).\n * Composes: IntentWizardShell, EntitySelectStep, Bound, Field, StepNav, SummaryStep, SuccessStep.\n */",
+      "components": [
+        "Bound",
+        "EntitySelectStep",
+        "Field",
+        "IntentWizardShell",
+        "StepNav",
+        "SuccessStep",
+        "SummaryStep",
+        "WizardStep"
+      ],
+      "writes": []
+    }
+  ],
+  "unregistered_pages": []
+}

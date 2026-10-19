@@ -30,7 +30,7 @@ prescribed them cost every lane a gate round (live 07.09.2026 — wrong vSQL
 and a `createRecordUrl` call copied into three flows). A brief carries the
 domain: steps, eligible records, fields as `name![type: keys]`, sentences.
   @/types/app                            entity types, APP_IDS, LOOKUP_OPTIONS
-  @/types/enriched                       EnrichedVorhaben, EnrichedLernpruefungen, EnrichedErfahrungen, EnrichedEntscheidungen, EnrichedRegelnUndBerechtigungen, EnrichedAlternativen, EnrichedMassnahmen — the COMPLETE list, no other Enriched* type exists
+  @/types/enriched                       EnrichedRegelnUndBerechtigungen, EnrichedVorhaben, EnrichedEntscheidungen, EnrichedAlternativen, EnrichedMassnahmen, EnrichedErfahrungen, EnrichedLernpruefungen — the COMPLETE list, no other Enriched* type exists
   @/lib/enrich                           the enrich functions — exact fields and signatures on the `✚` line of each entity below; every listed map is REQUIRED, and no other enriched field exists
   @/services/livingAppsService           LivingAppsService, createRecordUrl, extractRecordId — dashboard overview only; a flow writes through its plan (create) or `updates: id` (update), never through the service (gate 3z)
   @/hooks/useDashboardData               useDashboardData — DASHBOARD OVERVIEW ONLY: the RAW arrays (one per entity, camelCase), their setters, loading, error, fetchAll. Never in a flow page (gate 3y): a flow reads through the journey layer (useRecordSearch, useOccupancy, x.recordOf) + alternativenMap, entscheidungenMap, erfahrungenMap, massnahmenMap, nutzerMap, regelnUndBerechtigungenMap, vorhabenMap; it carries NO enriched arrays — build those with the `✚` call below
@@ -51,6 +51,16 @@ There is NO `@/config/appIds`, no `@/config/lookupOptions` and no
 `@/lib/urlUtils` — APP_IDS and LOOKUP_OPTIONS come from `@/types/app`,
 createRecordUrl from the service. Note the lowercase `l` in the service path.
 
+- Nutzer (nutzer): nutzer_firstname!^[string/text] "Vorname", nutzer_lastname!^[string/text] "Nachname", email^[string/email] "E-Mail", art![lookup/radio: mensch|ki_assistent], rolle![lookup/select: administrator|projektverantwortlicher|entscheider|fachexperte|pruefer|mitarbeiter|ki_assistent], fachgebiet[string/text], verantwortungsbereich[string/textarea], aktiv[bool]
+  ≡ 8 records at build time
+  ◈ art → choice (2 options, ChoiceGroup)
+  ⚙ getNutzer() · getNutzerEntry(id) · createNutzerEntry(fields) · updateNutzerEntry(id, fields) · deleteNutzerEntry(id) · queryNutzer({ filter, orderby, limit, offset, fields }) · countNutzer(filter?)
+- Regeln und Berechtigungen (regeln_und_berechtigungen): bezeichnung!^[string/text], beschreibung[string/textarea], regeltyp![lookup/radio: regel|berechtigung|grenze], geltungsbereich^[string/text], betroffene_rolle[lookup/select: alle|administrator|projektverantwortlicher|entscheider|fachexperte|pruefer|mitarbeiter|ki_assistent], freigabepflicht[bool] "Freigabe durch einen Menschen erforderlich", gueltig_ab[date/date], status![lookup/select: entwurf|gueltig|ausser_kraft], verantwortlicher[applookup/select]
+  ≡ 8 records at build time
+  ◈ regeltyp → choice (3 options, ChoiceGroup) · status → choice (3 options, ChoiceGroup) · verantwortlicher → record (nutzer, EntitySelectStep)
+  ⚙ getRegelnUndBerechtigungen() · getRegelnUndBerechtigungenEntry(id) · createRegelnUndBerechtigungenEntry(fields) · updateRegelnUndBerechtigungenEntry(id, fields) · deleteRegelnUndBerechtigungenEntry(id) · queryRegelnUndBerechtigungen({ filter, orderby, limit, offset, fields }) · countRegelnUndBerechtigungen(filter?)
+  ✚ EnrichedRegelnUndBerechtigungen adds ONLY verantwortlicherName — via enrichRegelnUndBerechtigungen(regelnUndBerechtigungen, { nutzerMap }), all maps required
+  → verantwortlicher links to app_id 6ad478dad37a33c5729c18b8
 - Vorhaben (vorhaben): titel!^[string/text], ziel![string/textarea], fachlicher_kontext[string/textarea], hintergrund_historie[string/textarea] "Hintergrund und Historie", arbeitszustand![lookup/select: wartet_auf_entscheidung|umgesetzt|wirkung_pruefen|abgeschlossen|pausiert|idee|geplant|in_arbeit], naechster_schritt[string/text], verantwortlicher[applookup/select], beteiligte[multipleapplookup/select], geltende_regeln[multipleapplookup/select], ansprechpartner[string/textarea] "Ansprechpartner und Besonderheiten", start[date/date], zieltermin[date/date], dokumentation[file]
   ≡ 8 records at build time
   ◈ verantwortlicher → record (nutzer, EntitySelectStep) · beteiligte → record (nutzer, EntitySelectStep) · geltende_regeln → record (regeln_und_berechtigungen, EntitySelectStep)
@@ -59,23 +69,6 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   → verantwortlicher links to app_id 6ad478dad37a33c5729c18b8
   → beteiligte links to app_id 6ad478dad37a33c5729c18b8
   → geltende_regeln links to app_id 6ad478e0b6cd519b98e48896
-- Lernprüfungen (lernpruefungen): pruefer!^[applookup/select], pruefdatum!^[date/date], ergebnis!^[lookup/radio: eingeschraenkt|widerlegt|bestaetigt], begruendung^[string/textarea], gueltigkeitsbereich_neu[string/textarea] "Gültigkeitsbereich nach Prüfung", wiederverwendbar_fuer[string/text], naechste_ueberpruefung[date/date], erfahrung!^[applookup/select], belege_massnahmen[multipleapplookup/select] "Belege aus Maßnahmen"
-  ≡ 13 records at build time
-  ◈ ergebnis → choice (3 options, ChoiceGroup) · pruefer → record (nutzer, EntitySelectStep) · erfahrung → record (erfahrungen, EntitySelectStep) · belege_massnahmen → record (massnahmen, EntitySelectStep)
-  ⚙ getLernpruefungen() · getLernpruefungenEntry(id) · createLernpruefungenEntry(fields) · updateLernpruefungenEntry(id, fields) · deleteLernpruefungenEntry(id) · queryLernpruefungen({ filter, orderby, limit, offset, fields }) · countLernpruefungen(filter?)
-  ✚ EnrichedLernpruefungen adds ONLY prueferName, erfahrungName, belege_massnahmenName — via enrichLernpruefungen(lernpruefungen, { nutzerMap, erfahrungenMap, massnahmenMap }), all maps required
-  → pruefer links to app_id 6ad478dad37a33c5729c18b8
-  → erfahrung links to app_id 6ad478e4d33de030b5e08357
-  → belege_massnahmen links to app_id 6ad478e32aa0a450934e45af
-- Erfahrungen (erfahrungen): titel!^[string/text], kategorie![lookup/select: historische_entscheidung|technische_besonderheit|frueherer_fehler|informelle_regel|ansprechpartner|loesungsweg=Funktionierender Lösungsweg], beschreibung[string/textarea], situation[string/textarea], erkenntnis[string/textarea] "Lösung oder Erkenntnis", gueltigkeitsbereich[string/textarea], grenzen[string/textarea], vorhaben[applookup/select] "Quelle: Vorhaben", wissenstraeger[applookup/select] "Quelle: Wissensträger", erfasst_von[applookup/select], status![lookup/select: entwurf|geprueft|veraltet], entscheidung[applookup/select] "Quelle: Entscheidung"
-  ≡ 8 records at build time
-  ◈ kategorie → choice (6 options, ChoiceGroup) · status → choice (3 options, ChoiceGroup) · vorhaben → record (vorhaben, EntitySelectStep) · wissenstraeger → record (nutzer, EntitySelectStep) · erfasst_von → record (nutzer, EntitySelectStep) · entscheidung → record (entscheidungen, EntitySelectStep)
-  ⚙ getErfahrungen() · getErfahrungenEntry(id) · createErfahrungenEntry(fields) · updateErfahrungenEntry(id, fields) · deleteErfahrungenEntry(id) · queryErfahrungen({ filter, orderby, limit, offset, fields }) · countErfahrungen(filter?)
-  ✚ EnrichedErfahrungen adds ONLY vorhabenName, wissenstraegerName, erfasst_vonName, entscheidungName — via enrichErfahrungen(erfahrungen, { vorhabenMap, nutzerMap, entscheidungenMap }), all maps required
-  → vorhaben links to app_id 6ad478e140bebb73824babf9
-  → wissenstraeger links to app_id 6ad478dad37a33c5729c18b8
-  → erfasst_von links to app_id 6ad478dad37a33c5729c18b8
-  → entscheidung links to app_id 6ad478e24488328034d9650d
 - Entscheidungen (entscheidungen): gewaehlte_option[applookup/select], vorhaben!^[applookup/select], entscheidungsfrage!^[string/textarea], situationstyp!^[lookup/select: strategisch|technisch|risiko|eilentscheidung|routine], gesicherte_fakten^[string/textarea], offene_annahmen^[string/textarea], fehlende_informationen[string/textarea], geltende_regeln[multipleapplookup/select] "Geltende Regeln und Grenzen", zustaendiger![applookup/select], frist[date/date], status![lookup/select: vorbereitet|in_pruefung|entschieden|umgesetzt|verworfen], begruendung[string/textarea], entscheidungsdatum[date/date], umsetzungsplan[string/textarea], erwartetes_ergebnis[string/textarea], tatsaechliches_ergebnis[string/textarea]
   ≡ 8 records at build time
   ◈ situationstyp → choice (5 options, ChoiceGroup) · status → choice (5 options, ChoiceGroup) · gewaehlte_option → record (alternativen, EntitySelectStep) · vorhaben → record (vorhaben, EntitySelectStep) · geltende_regeln → record (regeln_und_berechtigungen, EntitySelectStep) · zustaendiger → record (nutzer, EntitySelectStep)
@@ -85,12 +78,6 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   → vorhaben links to app_id 6ad478e140bebb73824babf9
   → geltende_regeln links to app_id 6ad478e0b6cd519b98e48896
   → zustaendiger links to app_id 6ad478dad37a33c5729c18b8
-- Regeln und Berechtigungen (regeln_und_berechtigungen): bezeichnung!^[string/text], beschreibung[string/textarea], regeltyp![lookup/radio: regel|berechtigung|grenze], geltungsbereich^[string/text], betroffene_rolle[lookup/select: alle|administrator|projektverantwortlicher|entscheider|fachexperte|pruefer|mitarbeiter|ki_assistent], freigabepflicht[bool] "Freigabe durch einen Menschen erforderlich", gueltig_ab[date/date], status![lookup/select: entwurf|gueltig|ausser_kraft], verantwortlicher[applookup/select]
-  ≡ 8 records at build time
-  ◈ regeltyp → choice (3 options, ChoiceGroup) · status → choice (3 options, ChoiceGroup) · verantwortlicher → record (nutzer, EntitySelectStep)
-  ⚙ getRegelnUndBerechtigungen() · getRegelnUndBerechtigungenEntry(id) · createRegelnUndBerechtigungenEntry(fields) · updateRegelnUndBerechtigungenEntry(id, fields) · deleteRegelnUndBerechtigungenEntry(id) · queryRegelnUndBerechtigungen({ filter, orderby, limit, offset, fields }) · countRegelnUndBerechtigungen(filter?)
-  ✚ EnrichedRegelnUndBerechtigungen adds ONLY verantwortlicherName — via enrichRegelnUndBerechtigungen(regelnUndBerechtigungen, { nutzerMap }), all maps required
-  → verantwortlicher links to app_id 6ad478dad37a33c5729c18b8
 - Alternativen (alternativen): bezeichnung!^[string/text], beschreibung[string/textarea], konsequenzen[string/textarea], risiken[string/textarea], aufwand[string/text], empfehlungsgrad[lookup/radio: empfohlen|neutral|nicht_empfohlen], herkunft![lookup/radio: mensch|ki], vorgeschlagen_von[applookup/select], entscheidung![applookup/select]
   ≡ 8 records at build time
   ◈ empfehlungsgrad → choice (3 options, ChoiceGroup) · herkunft → choice (2 options, ChoiceGroup) · vorgeschlagen_von → record (nutzer, EntitySelectStep) · entscheidung → record (entscheidungen, EntitySelectStep)
@@ -98,10 +85,6 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   ✚ EnrichedAlternativen adds ONLY vorgeschlagen_vonName, entscheidungName — via enrichAlternativen(alternativen, { nutzerMap, entscheidungenMap }), all maps required
   → vorgeschlagen_von links to app_id 6ad478dad37a33c5729c18b8
   → entscheidung links to app_id 6ad478e24488328034d9650d
-- Nutzer (nutzer): nutzer_firstname!^[string/text] "Vorname", nutzer_lastname!^[string/text] "Nachname", email^[string/email] "E-Mail", art![lookup/radio: mensch|ki_assistent], rolle![lookup/select: administrator|projektverantwortlicher|entscheider|fachexperte|pruefer|mitarbeiter|ki_assistent], fachgebiet[string/text], verantwortungsbereich[string/textarea], aktiv[bool]
-  ≡ 8 records at build time
-  ◈ art → choice (2 options, ChoiceGroup)
-  ⚙ getNutzer() · getNutzerEntry(id) · createNutzerEntry(fields) · updateNutzerEntry(id, fields) · deleteNutzerEntry(id) · queryNutzer({ filter, orderby, limit, offset, fields }) · countNutzer(filter?)
 - Maßnahmen (massnahmen): entscheidung^[applookup/select], vorhaben!^[applookup/select], beschreibung!^[string/textarea] "Beschreibung der Tätigkeit", herkunft!^[lookup/radio: mensch|ki_vorschlag], vorgeschlagen_von^[applookup/select], status![lookup/select: vorgeschlagen|abgelehnt|in_umsetzung|erledigt|freigegeben], freigegeben_von[applookup/select], freigabedatum[date/datetimeminute], zustandsaenderung[string/textarea], umsetzungsdatum[date/date] "Datum der Umsetzung", tatsaechliches_ergebnis[string/textarea], abweichung[string/textarea] "Abweichung vom Erwarteten"
   ≡ 8 records at build time
   · freigabedatum: A specific moment in time consisting of year, month, day, hour and minute (or `null`/`None`) The field value will be a string in the format `<YYYY>-<MM>-<DD>T<HH>:<MM>` (or `null`/`None`). For example: `2000-02-29T11:30`. For `POST`/`PUT`/`PATCH` requests the REST API uses a liberal parsing approach so that strings like `2026`, `February 29, 2000 12:34 MEST`, `letztes Jahr` etc. will be accepted as value datetime values. However this runs the risk of parsing ambiguous values incorrectly. To ensure reliable parsing it is best to use the canonical format specified above.
@@ -112,3 +95,20 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   → vorhaben links to app_id 6ad478e140bebb73824babf9
   → vorgeschlagen_von links to app_id 6ad478dad37a33c5729c18b8
   → freigegeben_von links to app_id 6ad478dad37a33c5729c18b8
+- Erfahrungen (erfahrungen): titel!^[string/text], kategorie![lookup/select: historische_entscheidung|technische_besonderheit|frueherer_fehler|informelle_regel|ansprechpartner|loesungsweg=Funktionierender Lösungsweg], beschreibung[string/textarea], situation[string/textarea], erkenntnis[string/textarea] "Lösung oder Erkenntnis", gueltigkeitsbereich[string/textarea], grenzen[string/textarea], vorhaben[applookup/select] "Quelle: Vorhaben", wissenstraeger[applookup/select] "Quelle: Wissensträger", erfasst_von[applookup/select], status![lookup/select: entwurf|geprueft|veraltet], entscheidung[applookup/select] "Quelle: Entscheidung"
+  ≡ 8 records at build time
+  ◈ kategorie → choice (6 options, ChoiceGroup) · status → choice (3 options, ChoiceGroup) · vorhaben → record (vorhaben, EntitySelectStep) · wissenstraeger → record (nutzer, EntitySelectStep) · erfasst_von → record (nutzer, EntitySelectStep) · entscheidung → record (entscheidungen, EntitySelectStep)
+  ⚙ getErfahrungen() · getErfahrungenEntry(id) · createErfahrungenEntry(fields) · updateErfahrungenEntry(id, fields) · deleteErfahrungenEntry(id) · queryErfahrungen({ filter, orderby, limit, offset, fields }) · countErfahrungen(filter?)
+  ✚ EnrichedErfahrungen adds ONLY vorhabenName, wissenstraegerName, erfasst_vonName, entscheidungName — via enrichErfahrungen(erfahrungen, { vorhabenMap, nutzerMap, entscheidungenMap }), all maps required
+  → vorhaben links to app_id 6ad478e140bebb73824babf9
+  → wissenstraeger links to app_id 6ad478dad37a33c5729c18b8
+  → erfasst_von links to app_id 6ad478dad37a33c5729c18b8
+  → entscheidung links to app_id 6ad478e24488328034d9650d
+- Lernprüfungen (lernpruefungen): pruefer!^[applookup/select], pruefdatum!^[date/date], ergebnis!^[lookup/radio: eingeschraenkt|widerlegt|bestaetigt], begruendung^[string/textarea], gueltigkeitsbereich_neu[string/textarea] "Gültigkeitsbereich nach Prüfung", wiederverwendbar_fuer[string/text], naechste_ueberpruefung[date/date], erfahrung!^[applookup/select], belege_massnahmen[multipleapplookup/select] "Belege aus Maßnahmen"
+  ≡ 14 records at build time
+  ◈ ergebnis → choice (3 options, ChoiceGroup) · pruefer → record (nutzer, EntitySelectStep) · erfahrung → record (erfahrungen, EntitySelectStep) · belege_massnahmen → record (massnahmen, EntitySelectStep)
+  ⚙ getLernpruefungen() · getLernpruefungenEntry(id) · createLernpruefungenEntry(fields) · updateLernpruefungenEntry(id, fields) · deleteLernpruefungenEntry(id) · queryLernpruefungen({ filter, orderby, limit, offset, fields }) · countLernpruefungen(filter?)
+  ✚ EnrichedLernpruefungen adds ONLY prueferName, erfahrungName, belege_massnahmenName — via enrichLernpruefungen(lernpruefungen, { nutzerMap, erfahrungenMap, massnahmenMap }), all maps required
+  → pruefer links to app_id 6ad478dad37a33c5729c18b8
+  → erfahrung links to app_id 6ad478e4d33de030b5e08357
+  → belege_massnahmen links to app_id 6ad478e32aa0a450934e45af
